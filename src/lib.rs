@@ -11,6 +11,7 @@ impl Prismatik {
 			stream: TcpStream::connect(path).unwrap()
 		};
 		prism.send_key(key);
+		prism.lock()
 		prism
 	}
 
@@ -21,6 +22,11 @@ impl Prismatik {
 	pub fn send_key(&mut self, key: &str) {
 		let key_string = "apikey:{".to_string() + key + "}";
 		self.stream.write(&key_string.into_bytes());
+	}
+
+	pub fn lock(&mut self) {
+		let lock_string = "lock";
+		self.stream.write(&lock_string.into_bytes());
 	}
 
 	pub fn set_brightness(&mut self, level: usize) {
