@@ -11,7 +11,7 @@ impl Prismatik {
 			stream: TcpStream::connect(path).unwrap()
 		};
 		prism.send_key(key);
-		prism.lock()
+		prism.lock();
 		prism
 	}
 
@@ -19,34 +19,44 @@ impl Prismatik {
 		100
 	}
 
+	pub fn flush(&mut self) {
+		self.stream.flush();
+	}
+
 	pub fn send_key(&mut self, key: &str) {
 		let key_string = "apikey:{".to_string() + key + "}";
 		self.stream.write(&key_string.into_bytes());
+		self.flush();
 	}
 
 	pub fn lock(&mut self) {
-		let lock_string = "lock";
+		let lock_string = "lock".to_string();
 		self.stream.write(&lock_string.into_bytes());
+		self.flush();
 	}
 
 	pub fn set_brightness(&mut self, level: usize) {
 		let brightness_string = "setbrightness:".to_string() + &level.to_string();
 		self.stream.write(&brightness_string.into_bytes());
+		self.flush();
 	}
 
 	pub fn set_smooth(&mut self, level: usize) {
 		let smooth_string = "setsmooth:".to_string() + &level.to_string();
 		self.stream.write(&smooth_string.into_bytes());
+		self.flush();
 	}
 
 	pub fn set_color(&mut self, id: usize, r: usize, g: usize, b:usize) {
 		let color_string = "setcolor:".to_string() + &id.to_string() + "-" + &r.to_string() + "," + &g.to_string() + "," + &b.to_string() + ";";
 		self.stream.write(&color_string.into_bytes());
+		self.flush();
 	}
 
 	pub fn set_on(&mut self, on: bool) {
 		let status_string = "setstatus:".to_string() + if on { "on" } else { "off" };
 		self.stream.write(&status_string.into_bytes());
+		self.flush();
 	}
 
 	pub fn set_all_lights(&mut self, r: usize, g: usize, b: usize) {
