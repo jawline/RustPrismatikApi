@@ -25,37 +25,37 @@ impl Prismatik {
 
 	pub fn send_key(&mut self, key: &str) {
 		let key_string = "apikey:{".to_string() + key + "}";
-		self.stream.write(&key_string.into_bytes());
+		write!(self.stream, "{}\n", key_string);
 		self.flush();
 	}
 
 	pub fn lock(&mut self) {
 		let lock_string = "lock".to_string();
-		self.stream.write(&lock_string.into_bytes());
+		write!(self.stream, "{}\n", lock_string);
 		self.flush();
 	}
 
 	pub fn set_brightness(&mut self, level: usize) {
 		let brightness_string = "setbrightness:".to_string() + &level.to_string();
-		self.stream.write(&brightness_string.into_bytes());
+		write!(self.stream, "{}\n", brightness_string);
 		self.flush();
 	}
 
 	pub fn set_smooth(&mut self, level: usize) {
 		let smooth_string = "setsmooth:".to_string() + &level.to_string();
-		self.stream.write(&smooth_string.into_bytes());
+		write!(self.stream, "{}\n", smooth_string);
 		self.flush();
 	}
 
 	pub fn set_color(&mut self, id: usize, r: usize, g: usize, b:usize) {
 		let color_string = "setcolor:".to_string() + &id.to_string() + "-" + &r.to_string() + "," + &g.to_string() + "," + &b.to_string() + ";";
-		self.stream.write(&color_string.into_bytes());
+		write!(self.stream, "{}\n", color_string);
 		self.flush();
 	}
 
 	pub fn set_on(&mut self, on: bool) {
 		let status_string = "setstatus:".to_string() + if on { "on" } else { "off" };
-		self.stream.write(&status_string.into_bytes());
+		write!(self.stream, "{}\n", status_string);
 		self.flush();
 	}
 
