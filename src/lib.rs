@@ -48,7 +48,7 @@ impl Prismatik {
 	}
 
 	pub fn set_color(&mut self, id: usize, r: usize, g: usize, b:usize) {
-		let color_string = "setcolor:".to_string() + &id.to_string() + "-" + &r.to_string() + "," + &g.to_string() + "," + &b.to_string() + ";";
+		let color_string = format!("setcolor:{}-{},{},{};", id, r, g, b).to_string();
 		write!(self.stream, "{}\n", color_string);
 		self.flush();
 	}
