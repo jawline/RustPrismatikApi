@@ -42,7 +42,7 @@ impl Prismatik {
 	}
 
 	pub fn set_smooth(&mut self, level: usize) {
-		let smooth_string = "setsmooth:".to_string() + &level.to_string();
+		let smooth_string = format!("setsmooth:{}", level).to_string();
 		write!(self.stream, "{}\n", smooth_string);
 		self.flush();
 	}
