@@ -24,7 +24,7 @@ impl Prismatik {
 	}
 
 	pub fn send_key(&mut self, key: &str) {
-		let key_string = "apikey:{".to_string() + key + "}";
+		let key_string = format!("apikey:\{{}\}", key).to_string();
 		write!(self.stream, "{}\n", key_string);
 		self.flush();
 	}
