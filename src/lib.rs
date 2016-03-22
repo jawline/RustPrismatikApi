@@ -54,7 +54,7 @@ impl Prismatik {
 	}
 
 	pub fn set_on(&mut self, on: bool) {
-		let status_string = "setstatus:".to_string() + if on { "on" } else { "off" };
+		let status_string = format!("setstatus:{}", if on { "on" } else { "off" }).to_string();
 		write!(self.stream, "{}\n", status_string);
 		self.flush();
 	}
