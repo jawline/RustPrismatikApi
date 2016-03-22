@@ -36,7 +36,7 @@ impl Prismatik {
 	}
 
 	pub fn set_brightness(&mut self, level: usize) {
-		let brightness_string = "setbrightness:".to_string() + &level.to_string();
+		let brightness_string = format!("setbrightness:{}", level).to_string();
 		write!(self.stream, "{}\n", brightness_string);
 		self.flush();
 	}
