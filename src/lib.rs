@@ -78,7 +78,7 @@ impl Prismatik for CoreApi {
 	}
 
 	fn lock(&mut self) -> bool {
-		write!(self.stream, "lock\n", lock_string).is_ok()
+		write!(self.stream, "lock\n").is_ok()
 	}
 
 	fn unlock(&mut self) -> bool {
