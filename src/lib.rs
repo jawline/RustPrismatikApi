@@ -75,7 +75,7 @@ impl CoreApi {
 
 impl Prismatik for CoreApi {
 
-	pub fn light_count(&mut self) -> usize {
+	fn light_count(&mut self) -> usize {
 		100
 	}
 
