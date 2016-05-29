@@ -3,8 +3,8 @@ use std::net::TcpStream;
 
 pub trait Prismatik {
 	fn light_count(&mut self) -> usize;
-	fn lock(&mut self);
-	fn unlock(&mut self);
+	fn lock(&mut self) -> bool;
+	fn unlock(&mut self) -> bool;
 	fn set_brightness(&mut self, level: usize);
 	fn set_smooth(&mut self, level: usize);
 	fn set_color(&mut self, id: usize, r: usize, g: usize, b:usize);
@@ -28,8 +28,8 @@ impl Dummy {
 
 impl Prismatik for Dummy {
 	fn light_count(&mut self) -> usize { 100 }
-	fn lock(&mut self) {}
-	fn unlock(&mut self) {}
+	fn lock(&mut self) -> bool { true }
+	fn unlock(&mut self) -> bool { true }
 	fn set_brightness(&mut self, _: usize) {}
 	fn set_smooth(&mut self, _: usize) {}
 	fn set_color(&mut self, _: usize, _: usize, _: usize, _:usize) {}
@@ -77,15 +77,12 @@ impl Prismatik for CoreApi {
 		100
 	}
 
-	fn lock(&mut self) {
-		let lock_string = "lock".to_string();
-		write!(self.stream, "{}\n", lock_string);
-		self.flush();
+	fn lock(&mut self) -> bool {
+		write!(self.stream, "lock\n", lock_string).is_ok()
 	}
 
-	fn unlock(&mut self) {
-		write!(self.stream, "unlock\n");
-		self.flush();
+	fn unlock(&mut self) -> bool {
+		write!(self.stream, "unlock\n").is_ok()
 	}
 
 	fn set_brightness(&mut self, level: usize) {
