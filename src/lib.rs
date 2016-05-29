@@ -16,18 +16,19 @@ pub fn set_all_lights(api: &mut Prismatik, r: usize, g: usize, b: usize) -> Resu
 	let count = api.light_count();
 
 	if count.is_err() {
-		return Err(count.err());
-	}
+		return Err(count.err().unwrap())
+	} else {
+		let count = count.unwrap();
 
-	let count = count.unwrap();
-
-	for id in 0..count {
-		let r = api.set_color(id, r, g, b);
-		if r.is_err() {
-			return r;
+		for id in 0..count {
+			let r = api.set_color(id, r, g, b);
+			if r.is_err() {
+				return r;
+			}
 		}
+
+		Ok(())
 	}
-	Ok(())
 }
 
 struct Dummy;
@@ -39,7 +40,7 @@ impl Dummy {
 }
 
 impl Prismatik for Dummy {
-	fn light_count(&mut self) -> usize { Ok(100) }
+	fn light_count(&mut self) -> Result<usize, Error> { Ok(100) }
 	fn lock(&mut self) -> Result<(), Error> { Ok(()) }
 	fn unlock(&mut self) -> Result<(), Error> { Ok(()) }
 	fn set_brightness(&mut self, _: usize) -> Result<(), Error> { Ok(()) }
@@ -85,8 +86,8 @@ impl CoreApi {
 
 impl Prismatik for CoreApi {
 
-	fn light_count(&mut self) -> usize {
-		Ok(())
+	fn light_count(&mut self) -> Result<usize, Error> {
+		Ok(100)
 	}
 
 	fn lock(&mut self) -> Result<(), Error> {
