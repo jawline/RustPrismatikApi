@@ -29,13 +29,13 @@ impl Dummy {
 }
 
 impl Primsatik for Dummy {
-	pub fn light_count(&mut self) { 100 }
-	pub fn lock(&mut self) {}
-	pub fn unlock(&mut self) {}
-	pub fn set_brightness(&mut self, level: usize) {}
-	pub fn set_smooth(&mut self, level: usize) {}
-	pub fn set_color(&mut self, id: usize, r: usize, g: usize, b:usize) {}
-	pub fn set_on(&mut self, on: bool) {}
+	fn light_count(&mut self) { 100 }
+	fn lock(&mut self) {}
+	fn unlock(&mut self) {}
+	fn set_brightness(&mut self, level: usize) {}
+	fn set_smooth(&mut self, level: usize) {}
+	fn set_color(&mut self, id: usize, r: usize, g: usize, b:usize) {}
+	fn set_on(&mut self, on: bool) {}
 }
 
 pub struct CoreApi {
