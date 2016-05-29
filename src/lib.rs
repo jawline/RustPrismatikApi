@@ -30,10 +30,10 @@ impl Prismatik for Dummy {
 	fn light_count(&mut self) -> usize { 100 }
 	fn lock(&mut self) {}
 	fn unlock(&mut self) {}
-	fn set_brightness(&mut self, level: usize) {}
-	fn set_smooth(&mut self, level: usize) {}
-	fn set_color(&mut self, id: usize, r: usize, g: usize, b:usize) {}
-	fn set_on(&mut self, on: bool) {}
+	fn set_brightness(&mut self, _: usize) {}
+	fn set_smooth(&mut self, _: usize) {}
+	fn set_color(&mut self, _: usize, _: usize, _: usize, _:usize) {}
+	fn set_on(&mut self, _: bool) {}
 }
 
 pub struct CoreApi {
