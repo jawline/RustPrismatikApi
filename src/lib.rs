@@ -1,9 +1,10 @@
 use std::io::prelude::*;
+use std::io::Error;
 use std::net::TcpStream;
 
 pub trait Prismatik {
 	fn light_count(&mut self) -> usize;
-	fn lock(&mut self) -> bool;
+	fn lock(&mut self) -> Result<(), Error>;
 	fn unlock(&mut self) -> bool;
 	fn set_brightness(&mut self, level: usize);
 	fn set_smooth(&mut self, level: usize);
@@ -28,7 +29,7 @@ impl Dummy {
 
 impl Prismatik for Dummy {
 	fn light_count(&mut self) -> usize { 100 }
-	fn lock(&mut self) -> bool { true }
+	fn lock(&mut self) -> Result<(), Error> { Ok(()) }
 	fn unlock(&mut self) -> bool { true }
 	fn set_brightness(&mut self, _: usize) {}
 	fn set_smooth(&mut self, _: usize) {}
@@ -77,8 +78,8 @@ impl Prismatik for CoreApi {
 		100
 	}
 
-	fn lock(&mut self) -> bool {
-		write!(self.stream, "lock\n").is_ok()
+	fn lock(&mut self) -> Result<(), Error> {
+		write!(self.stream, "lock\n")
 	}
 
 	fn unlock(&mut self) -> bool {
