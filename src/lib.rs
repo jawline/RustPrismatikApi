@@ -11,7 +11,7 @@ pub trait Prismatik {
 	fn set_on(&mut self, on: bool);
 }
 
-pub fn set_all_lights(&mut api: Prismatik, r: usize, g: usize, b: usize) {
+pub fn set_all_lights(api: &mut Prismatik, r: usize, g: usize, b: usize) {
 	let count = api.light_count();
 	for id in 0..count {
 		api.set_color(id, r, g, b);
@@ -46,9 +46,9 @@ impl CoreApi {
 
 		let out_stream = TcpStream::connect(path);
 
-		if out_stream.is_some() {
+		if out_stream.is_ok() {
 
-			let mut prism = Prismatik {
+			let mut prism = CoreApi {
 				stream: TcpStream::connect(path).unwrap()
 			};
 			
