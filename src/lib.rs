@@ -1,16 +1,14 @@
 use std::io::prelude::*;
 use std::net::TcpStream;
 
-trait Prismatik {
-
-	pub fn light_count(&mut self);
-	pub fn lock(&mut self);
-	pub fn unlock(&mut self);
-
-	pub fn set_brightness(&mut self, level: usize);
-	pub fn set_smooth(&mut self, level: usize);
-	pub fn set_color(&mut self, id: usize, r: usize, g: usize, b:usize);
-	pub fn set_on(&mut self, on: bool);
+pub trait Prismatik {
+	fn light_count(&mut self) -> usize;
+	fn lock(&mut self);
+	fn unlock(&mut self);
+	fn set_brightness(&mut self, level: usize);
+	fn set_smooth(&mut self, level: usize);
+	fn set_color(&mut self, id: usize, r: usize, g: usize, b:usize);
+	fn set_on(&mut self, on: bool);
 }
 
 pub fn set_all_lights(&mut api: Prismatik, r: usize, g: usize, b: usize) {
@@ -28,8 +26,8 @@ impl Dummy {
 	}
 }
 
-impl Primsatik for Dummy {
-	fn light_count(&mut self) { 100 }
+impl Prismatik for Dummy {
+	fn light_count(&mut self) -> usize { 100 }
 	fn lock(&mut self) {}
 	fn unlock(&mut self) {}
 	fn set_brightness(&mut self, level: usize) {}
@@ -39,12 +37,12 @@ impl Primsatik for Dummy {
 }
 
 pub struct CoreApi {
-	stream: Option<TcpStream>
+	stream: TcpStream
 }
 
 impl CoreApi {
 
-	pub fn new(path: &str, key: &str) -> Option<Prismatik> {
+	pub fn new(path: &str, key: &str) -> Option<CoreApi> {
 
 		let out_stream = TcpStream::connect(path);
 
@@ -85,25 +83,30 @@ impl Prismatik for CoreApi {
 		self.flush();
 	}
 
-	pub fn set_brightness(&mut self, level: usize) {
+	fn unlock(&mut self) {
+		write!(self.stream, "unlock\n");
+		self.flush();
+	}
+
+	fn set_brightness(&mut self, level: usize) {
 		let brightness_string = format!("setbrightness:{}", level).to_string();
 		write!(self.stream, "{}\n", brightness_string);
 		self.flush();
 	}
 
-	pub fn set_smooth(&mut self, level: usize) {
+	fn set_smooth(&mut self, level: usize) {
 		let smooth_string = format!("setsmooth:{}", level).to_string();
 		write!(self.stream, "{}\n", smooth_string);
 		self.flush();
 	}
 
-	pub fn set_color(&mut self, id: usize, r: usize, g: usize, b:usize) {
+	fn set_color(&mut self, id: usize, r: usize, g: usize, b:usize) {
 		let color_string = format!("setcolor:{}-{},{},{};", id, r, g, b).to_string();
 		write!(self.stream, "{}\n", color_string);
 		self.flush();
 	}
 
-	pub fn set_on(&mut self, on: bool) {
+	fn set_on(&mut self, on: bool) {
 		let status_string = format!("setstatus:{}", if on { "on" } else { "off" }).to_string();
 		write!(self.stream, "{}\n", status_string);
 		self.flush();
