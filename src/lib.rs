@@ -67,7 +67,7 @@ impl CoreApi {
 	}
 
 	pub fn send_key(&mut self, key: &str) {
-		let key_string = "apikey:{".to_string() + key + "}";
+		let key_string = format!("apikey:{{{}}}", key).to_string();
 		write!(self.stream, "{}\n", key_string);
 		self.flush();
 	}
@@ -85,26 +85,26 @@ impl Prismatik for CoreApi {
 		self.flush();
 	}
 
-	fn set_brightness(&mut self, level: usize) {
-		let brightness_string = "setbrightness:".to_string() + &level.to_string();
+	pub fn set_brightness(&mut self, level: usize) {
+		let brightness_string = format!("setbrightness:{}", level).to_string();
 		write!(self.stream, "{}\n", brightness_string);
 		self.flush();
 	}
 
-	fn set_smooth(&mut self, level: usize) {
-		let smooth_string = "setsmooth:".to_string() + &level.to_string();
+	pub fn set_smooth(&mut self, level: usize) {
+		let smooth_string = format!("setsmooth:{}", level).to_string();
 		write!(self.stream, "{}\n", smooth_string);
 		self.flush();
 	}
 
-	fn set_color(&mut self, id: usize, r: usize, g: usize, b:usize) {
-		let color_string = "setcolor:".to_string() + &id.to_string() + "-" + &r.to_string() + "," + &g.to_string() + "," + &b.to_string() + ";";
+	pub fn set_color(&mut self, id: usize, r: usize, g: usize, b:usize) {
+		let color_string = format!("setcolor:{}-{},{},{};", id, r, g, b).to_string();
 		write!(self.stream, "{}\n", color_string);
 		self.flush();
 	}
 
-	fn set_on(&mut self, on: bool) {
-		let status_string = "setstatus:".to_string() + if on { "on" } else { "off" };
+	pub fn set_on(&mut self, on: bool) {
+		let status_string = format!("setstatus:{}", if on { "on" } else { "off" }).to_string();
 		write!(self.stream, "{}\n", status_string);
 		self.flush();
 	}
