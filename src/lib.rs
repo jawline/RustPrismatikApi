@@ -55,7 +55,7 @@ pub struct CoreApi {
 
 impl CoreApi {
 
-	pub fn new(path: &str, key: &str) -> Option<CoreApi> {
+	pub fn new(path: &str, key: &str) -> Result<CoreApi, Error> {
 
 		let out_stream = TcpStream::connect(path);
 
@@ -64,23 +64,23 @@ impl CoreApi {
 			let mut prism = CoreApi {
 				stream: TcpStream::connect(path).unwrap()
 			};
-			
-			prism.send_key(key);
 
-			Some(prism)
+			let key_send = prism.send_key(key);
+			
+			if key_send.is_ok() {
+				Ok(prism)
+			} else {
+				Err(key_send.err().unwrap())
+			}
+
 		} else {
-			None
+			Err(out_stream.err().unwrap())
 		}
 	}
 
-	pub fn flush(&mut self) {
-		self.stream.flush();
-	}
-
-	pub fn send_key(&mut self, key: &str) {
+	pub fn send_key(&mut self, key: &str) -> Result<(), Error> {
 		let key_string = format!("apikey:{{{}}}", key).to_string();
-		write!(self.stream, "{}\n", key_string);
-		self.flush();
+		write!(self.stream, "{}\n", key_string)
 	}
 }
 
@@ -107,10 +107,10 @@ impl Prismatik for CoreApi {
 	}
 
 	fn set_color(&mut self, id: usize, r: usize, g: usize, b:usize) -> Result<(), Error> {
-		write!(self.stream, "setcolor:{}-{},{},{};", id, r, g, b)
+		write!(self.stream, "setcolor:{}-{},{},{};\n", id, r, g, b)
 	}
 
 	fn set_on(&mut self, on: bool) -> Result<(), Error> {
-		write!(self.stream, "setstatus:{}", if on { "on" } else { "off" })
+		write!(self.stream, "setstatus:{}\n", if on { "on" } else { "off" })
 	}
 }
