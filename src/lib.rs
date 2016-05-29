@@ -3,7 +3,7 @@ use std::io::Error;
 use std::net::TcpStream;
 
 pub trait Prismatik {
-	fn light_count(&mut self) -> usize;
+	fn light_count(&mut self) -> Result<usize, Error>;
 	fn lock(&mut self) -> Result<(), Error>;
 	fn unlock(&mut self) -> Result<(), Error>;
 	fn set_brightness(&mut self, level: usize) -> Result<(), Error>;
@@ -14,6 +14,13 @@ pub trait Prismatik {
 
 pub fn set_all_lights(api: &mut Prismatik, r: usize, g: usize, b: usize) -> Result<(), Error> {
 	let count = api.light_count();
+
+	if count.is_err() {
+		return Err(count.err());
+	}
+
+	let count = count.unwrap();
+
 	for id in 0..count {
 		let r = api.set_color(id, r, g, b);
 		if r.is_err() {
@@ -32,13 +39,13 @@ impl Dummy {
 }
 
 impl Prismatik for Dummy {
-	fn light_count(&mut self) -> usize { 100 }
+	fn light_count(&mut self) -> usize { Ok(100) }
 	fn lock(&mut self) -> Result<(), Error> { Ok(()) }
-	fn unlock(&mut self) -> bool { true }
-	fn set_brightness(&mut self, _: usize) {}
-	fn set_smooth(&mut self, _: usize) {}
-	fn set_color(&mut self, _: usize, _: usize, _: usize, _:usize) {}
-	fn set_on(&mut self, _: bool) {}
+	fn unlock(&mut self) -> Result<(), Error> { Ok(()) }
+	fn set_brightness(&mut self, _: usize) -> Result<(), Error> { Ok(()) }
+	fn set_smooth(&mut self, _: usize) -> Result<(), Error> { Ok(()) }
+	fn set_color(&mut self, _: usize, _: usize, _: usize, _:usize) -> Result<(), Error> { Ok(())}
+	fn set_on(&mut self, _: bool) -> Result<(), Error> { Ok(()) }
 }
 
 pub struct CoreApi {
@@ -79,38 +86,30 @@ impl CoreApi {
 impl Prismatik for CoreApi {
 
 	fn light_count(&mut self) -> usize {
-		100
+		Ok(())
 	}
 
 	fn lock(&mut self) -> Result<(), Error> {
 		write!(self.stream, "lock\n")
 	}
 
-	fn unlock(&mut self) -> bool {
-		write!(self.stream, "unlock\n").is_ok()
+	fn unlock(&mut self) -> Result<(), Error> {
+		write!(self.stream, "unlock\n")
 	}
 
-	fn set_brightness(&mut self, level: usize) {
-		let brightness_string = format!("setbrightness:{}", level).to_string();
-		write!(self.stream, "{}\n", brightness_string);
-		self.flush();
+	fn set_brightness(&mut self, level: usize) -> Result<(), Error> {
+		write!(self.stream, "setbrightness:{}\n", level)
 	}
 
-	fn set_smooth(&mut self, level: usize) {
-		let smooth_string = format!("setsmooth:{}", level).to_string();
-		write!(self.stream, "{}\n", smooth_string);
-		self.flush();
+	fn set_smooth(&mut self, level: usize) -> Result<(), Error> {
+		write!(self.stream, "setsmooth:{}\n", level)
 	}
 
-	fn set_color(&mut self, id: usize, r: usize, g: usize, b:usize) {
-		let color_string = format!("setcolor:{}-{},{},{};", id, r, g, b).to_string();
-		write!(self.stream, "{}\n", color_string);
-		self.flush();
+	fn set_color(&mut self, id: usize, r: usize, g: usize, b:usize) -> Result<(), Error> {
+		write!(self.stream, "setcolor:{}-{},{},{};", id, r, g, b)
 	}
 
-	fn set_on(&mut self, on: bool) {
-		let status_string = format!("setstatus:{}", if on { "on" } else { "off" }).to_string();
-		write!(self.stream, "{}\n", status_string);
-		self.flush();
+	fn set_on(&mut self, on: bool) -> Result<(), Error> {
+		write!(self.stream, "setstatus:{}", if on { "on" } else { "off" })
 	}
 }
