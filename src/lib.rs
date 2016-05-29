@@ -31,7 +31,7 @@ pub fn set_all_lights(api: &mut Prismatik, r: usize, g: usize, b: usize) -> Resu
 	}
 }
 
-struct Dummy;
+pub struct Dummy;
 
 impl Dummy {
 	pub fn new() -> Dummy {
