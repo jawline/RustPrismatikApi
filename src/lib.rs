@@ -22,6 +22,12 @@ pub fn set_all_lights(&mut api: Prismatik, r: usize, g: usize, b: usize) {
 
 struct Dummy;
 
+impl Dummy {
+	pub fn new() -> Dummy {
+		Dummy{}
+	}
+}
+
 impl Primsatik for Dummy {
 	pub fn light_count(&mut self) { 100 }
 	pub fn lock(&mut self) {}
@@ -38,15 +44,22 @@ pub struct CoreApi {
 
 impl CoreApi {
 
-	pub fn new(path: &str, key: &str) -> Prismatik {
+	pub fn new(path: &str, key: &str) -> Option<Prismatik> {
 
-		let mut prism = Prismatik {
-			stream: TcpStream::connect(path).unwrap()
-		};
-		
-		prism.send_key(key);
-		prism.lock();
-		prism
+		let out_stream = TcpStream::connect(path);
+
+		if out_stream.is_some() {
+
+			let mut prism = Prismatik {
+				stream: TcpStream::connect(path).unwrap()
+			};
+			
+			prism.send_key(key);
+
+			Some(prism)
+		} else {
+			None
+		}
 	}
 
 	pub fn flush(&mut self) {
