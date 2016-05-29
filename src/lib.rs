@@ -5,18 +5,22 @@ use std::net::TcpStream;
 pub trait Prismatik {
 	fn light_count(&mut self) -> usize;
 	fn lock(&mut self) -> Result<(), Error>;
-	fn unlock(&mut self) -> bool;
-	fn set_brightness(&mut self, level: usize);
-	fn set_smooth(&mut self, level: usize);
-	fn set_color(&mut self, id: usize, r: usize, g: usize, b:usize);
-	fn set_on(&mut self, on: bool);
+	fn unlock(&mut self) -> Result<(), Error>;
+	fn set_brightness(&mut self, level: usize) -> Result<(), Error>;
+	fn set_smooth(&mut self, level: usize) -> Result<(), Error>;
+	fn set_color(&mut self, id: usize, r: usize, g: usize, b:usize) -> Result<(), Error>;
+	fn set_on(&mut self, on: bool) -> Result<(), Error>;
 }
 
-pub fn set_all_lights(api: &mut Prismatik, r: usize, g: usize, b: usize) {
+pub fn set_all_lights(api: &mut Prismatik, r: usize, g: usize, b: usize) -> Result<(), Error> {
 	let count = api.light_count();
 	for id in 0..count {
-		api.set_color(id, r, g, b);
+		let r = api.set_color(id, r, g, b);
+		if r.is_err() {
+			return r;
+		}
 	}
+	Ok(())
 }
 
 struct Dummy;
