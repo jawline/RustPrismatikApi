@@ -79,8 +79,7 @@ impl CoreApi {
 	}
 
 	pub fn send_key(&mut self, key: &str) -> Result<(), Error> {
-		let key_string = format!("apikey:{{{}}}", key).to_string();
-		write!(self.stream, "{}\n", key_string)
+		write!(self.stream, "apikey:{}\n", key)
 	}
 }
 
