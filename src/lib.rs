@@ -103,7 +103,7 @@ impl Prismatik for CoreApi {
 		match write!(self.stream, "getcountleds\n") {
 			Ok(_) => match self.stream.read(&mut led_count_data) {
 				Ok(_) => {
-					let led_count_data = str::from_utf8(&led_count_data).unwrap().trim();
+					let led_count_data = str::from_utf8(&led_count_data).unwrap().trim().split(":")[1];
 					Ok(usize::from_str(led_count_data).unwrap())
 				},
 				Err(err) => Err(err)
