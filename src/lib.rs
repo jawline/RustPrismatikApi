@@ -1,5 +1,7 @@
 use std::io::prelude::*;
 use std::io::Error;
+use std::str;
+use std::str::FromStr;
 use std::net::TcpStream;
 
 pub trait Prismatik {
@@ -78,7 +80,16 @@ impl CoreApi {
 		}
 	}
 
-	pub fn send_key(&mut self, key: &str) -> Result<(), Error> {
+	fn clear_buffer(&mut self) {
+		self.stream.set_nonblocking(true).unwrap();
+		while match self.stream.read(&mut [0; 4096]) {
+			Ok(size) => size != 0,
+			Err(_) => false
+		} {};
+		self.stream.set_nonblocking(false).unwrap();
+	}
+
+	fn send_key(&mut self, key: &str) -> Result<(), Error> {
 		write!(self.stream, "apikey:{}\n", key)
 	}
 }
@@ -86,7 +97,19 @@ impl CoreApi {
 impl Prismatik for CoreApi {
 
 	fn light_count(&mut self) -> Result<usize, Error> {
-		Ok(100)
+		self.clear_buffer();
+		let mut led_count_data = [0; 4096];
+
+		match write!(self.stream, "getcountleds\n") {
+			Ok(_) => match self.stream.read(&mut led_count_data) {
+				Ok(_) => {
+					let led_count_data = str::from_utf8(&led_count_data).unwrap().trim();
+					Ok(usize::from_str(led_count_data).unwrap())
+				},
+				Err(err) => Err(err)
+			},
+			Err(err) => Err(err)
+		}
 	}
 
 	fn lock(&mut self) -> Result<(), Error> {
