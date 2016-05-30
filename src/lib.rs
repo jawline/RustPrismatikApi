@@ -97,21 +97,7 @@ impl CoreApi {
 impl Prismatik for CoreApi {
 
 	fn light_count(&mut self) -> Result<usize, Error> {
-		self.clear_buffer();
-		let mut led_count_data = [0; 4096];
-
-		match write!(self.stream, "getcountleds\n") {
-			Ok(_) => match self.stream.read(&mut led_count_data) {
-				Ok(_) => {
-					let led_count_data = str::from_utf8(&led_count_data).unwrap();
-					println!("LED data {}", led_count_data);
-					let led_count_data = led_count_data.trim().split(":").nth(1).unwrap();
-					Ok(usize::from_str(led_count_data).unwrap())
-				},
-				Err(err) => Err(err)
-			},
-			Err(err) => Err(err)
-		}
+		Ok(100)
 	}
 
 	fn lock(&mut self) -> Result<(), Error> {
